@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Taller 1 Completo - Sistemas Expertos",
+      "setup": "pip install experta nbformat jupyter",
+      "run": "python tests/test_taller_completo.py",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 60,
+      "points": 300
+    }
+  ]
+}

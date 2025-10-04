@@ -1,0 +1,63 @@
+name: Autocalificación Taller 1 - IA
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Permite ejecución manual
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout código del estudiante
+      uses: actions/checkout@v4
+    
+    - name: Configurar Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install experta nbformat jupyter
+    
+    - name: Verificar estructura de archivos
+      run: |
+        echo "📁 Verificando estructura del repositorio..."
+        ls -la
+        if [ -f "Taller_1.ipynb" ]; then
+          echo "✅ Archivo Taller_1.ipynb encontrado"
+        else
+          echo "❌ ERROR: No se encontró Taller_1.ipynb"
+          exit 1
+        fi
+    
+    - name: Ejecutar tests de autocalificación
+      run: |
+        echo "🧪 Iniciando pruebas de autocalificación..."
+        python tests/test_taller_completo.py
+    
+    - name: Mostrar resultados
+      if: always()
+      run: |
+        echo ""
+        echo "📊 RESULTADOS DE LA CALIFICACIÓN:"
+        echo "================================="
+        if [ -f test_results.txt ]; then
+          cat test_results.txt
+        else
+          echo "⚠️ No se generaron resultados"
+        fi
+    
+    - name: Subir reporte de resultados
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: resultados-calificacion
+        path: test_results.txt
+        retention-days: 30
